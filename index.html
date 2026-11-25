@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FridgeChef — What's in Your Fridge? Get a Recipe</title>
+<meta name="description" content="Tell FridgeChef what ingredients you have, and get real recipes you can cook tonight — with structured, easy-to-follow steps. Powered by Firebase AI Logic hybrid inference: quick ideas on-device with Gemini Nano, full recipes in the cloud with Gemini." />
+<link rel="stylesheet" href="./styles.css" />
+<script type="importmap">
+{
+  "imports": {
+    "firebase/app": "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js",
+    "firebase/ai": "https://www.gstatic.com/firebasejs/13.0.0/firebase-ai.js",
+    "firebase/app-check": "https://www.gstatic.com/firebasejs/13.0.0/firebase-app-check.js"
+  }
+}
+</script>
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">🍳</span>
+      <div>
+        <strong>FridgeChef</strong>
+        <span class="tagline">What's in your fridge? Get a recipe.</span>
+      </div>
+    </div>
+    <div class="badges">
+      <span class="pill pill-hybrid">Hybrid AI</span>
+      <span class="pill" id="engineBadge">On-device + Cloud</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div id="demoBanner" class="demo-banner" hidden>
+    <strong>Demo Mode.</strong>
+    Add your Firebase web config in <code>firebase-config.js</code> to enable live AI.
+    The recipes below use built-in sample data so you can explore the interface.
+  </div>
+
+  <section class="hero">
+    <h1>Open the fridge. <span class="accent">Dinner is decided.</span></h1>
+    <p class="lede">Tell FridgeChef what you have — no more staring at the fridge wondering what to cook. Get three real recipes with clear steps, matched to your ingredients, diet, and time.</p>
+  </section>
+
+  <section class="card">
+    <label class="field-label" for="ingInput">Ingredients you have</label>
+    <div class="ing-row">
+      <input id="ingInput" type="text" placeholder="e.g. chicken, rice, tomatoes…" />
+      <button class="btn btn-primary" id="addIngBtn" type="button">Add</button>
+    </div>
+    <div id="ingChips" class="ing-chips" aria-live="polite"></div>
+    <div class="samples">
+      <span class="samples-label">Common:</span>
+      <button class="chip" data-ing="chicken" type="button">chicken</button>
+      <button class="chip" data-ing="eggs" type="button">eggs</button>
+      <button class="chip" data-ing="rice" type="button">rice</button>
+      <button class="chip" data-ing="tomatoes" type="button">tomatoes</button>
+      <button class="chip" data-ing="pasta" type="button">pasta</button>
+      <button class="chip" data-ing="potatoes" type="button">potatoes</button>
+      <button class="chip" data-ing="onions" type="button">onions</button>
+      <button class="chip" data-ing="cheese" type="button">cheese</button>
+    </div>
+
+    <div class="prefs">
+      <div>
+        <label class="field-label" for="servings">Servings</label>
+        <select id="servings">
+          <option value="1">1 person</option>
+          <option value="2" selected>2 people</option>
+          <option value="4">4 people</option>
+          <option value="6">6 people</option>
+        </select>
+      </div>
+      <div>
+        <label class="field-label" for="diet">Diet</label>
+        <select id="diet">
+          <option value="any" selected>Anything</option>
+          <option value="vegetarian">Vegetarian</option>
+          <option value="vegan">Vegan</option>
+          <option value="gluten-free">Gluten-free</option>
+        </select>
+      </div>
+      <div>
+        <label class="field-label" for="maxTime">Max time</label>
+        <select id="maxTime">
+          <option value="15">15 min</option>
+          <option value="30" selected>30 min</option>
+          <option value="60">60 min</option>
+          <option value="120">No limit</option>
+        </select>
+      </div>
+    </div>
+
+    <label class="field-label" for="modeSelect">Inference mode</label>
+    <select id="modeSelect">
+      <option value="prefer-device" selected>Auto — prefer on-device, fall back to cloud</option>
+      <option value="device-only">On-device only (private, offline)</option>
+      <option value="cloud-only">Cloud only (most powerful)</option>
+    </select>
+
+    <button class="btn btn-primary btn-large" id="cookBtn" type="button">🍳 Find recipes</button>
+    <p class="hint" id="statusLine">Add at least 2 ingredients, then press Find recipes.</p>
+  </section>
+
+  <section>
+    <div class="results-head">
+      <h2 class="results-title">Recipes for you</h2>
+      <span id="sourceBadge" class="source-badge" hidden></span>
+    </div>
+    <div id="results" class="results">
+      <p class="placeholder">Your recipes will appear here. Add ingredients above and press <strong>Find recipes</strong>.</p>
+    </div>
+  </section>
+
+  <section class="how">
+    <h2>How hybrid inference works here</h2>
+    <div class="how-grid">
+      <article class="how-card">
+        <h3>On-device · quick ideas</h3>
+        <p>Simple requests are handled on your device with Gemini Nano — fast, private, and free — and returned as structured recipe data.</p>
+      </article>
+      <article class="how-card">
+        <h3>Cloud · full recipes</h3>
+        <p>When the request is complex — many ingredients, dietary limits, longer recipes — it falls back to Gemini in the cloud.</p>
+      </article>
+      <article class="how-card">
+        <h3>Structured output</h3>
+        <p>Recipes come back as structured JSON (title, time, difficulty, ingredients, steps), so the app can render them as clean, usable recipe cards.</p>
+      </article>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    Built with <strong>Firebase AI Logic</strong> — Gemini Nano on-device + Gemini in the cloud.
+    Free to use. Happy cooking.
+  </div>
+</footer>
+
+<script type="module" src="./app.js"></script>
+</body>
+</html>
