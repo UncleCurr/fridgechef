@@ -10,7 +10,7 @@ import {
   GoogleAIBackend,
   InferenceMode,
 } from "firebase/ai";
-import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
+import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "firebase/app-check";
 import { firebaseConfig, isConfigured } from "./firebase-config.js";
 
 // ---------------------------------------------------------------------------
@@ -80,9 +80,8 @@ function initFirebase() {
   try {
     firebaseApp = initializeApp(firebaseConfig);
     try {
-      self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
       initializeAppCheck(firebaseApp, {
-        provider: new ReCaptchaV3Provider("6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"),
+        provider: new ReCaptchaEnterpriseProvider("6Ld4JjMuAAAAAIYZ9eIoz1eMsfraeFWjtYVQPmbk"),
         isTokenAutoRefreshEnabled: true,
       });
     } catch (e) {
