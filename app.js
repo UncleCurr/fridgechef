@@ -102,6 +102,17 @@ function inferenceModeFromSelect() {
   return InferenceMode.PREFER_ON_DEVICE;
 }
 
+// The Firebase AI Logic SDK returns inferenceSource as lowercase
+// snake_case ("in_cloud" / "on_device"), not the uppercase enum names
+// ("IN_CLOUD" / "ON_DEVICE"). Normalize it to the app's canonical form so
+// the source badge below matches a live response.
+function normalizeSource(value) {
+  const v = String(value || "in_cloud").toUpperCase().replace(/-/g, "_");
+  if (v === "ON_DEVICE") return "ON_DEVICE";
+  if (v === "IN_CLOUD") return "IN_CLOUD";
+  return v;
+}
+
 // ---------------------------------------------------------------------------
 // Structured output: ask for JSON, parse defensively.
 // ---------------------------------------------------------------------------
@@ -268,7 +279,7 @@ async function findRecipes() {
     const result = await model.generateContent(buildPrompt());
     const response = await result.response;
     const raw = response.text();
-    const source = response.inferenceSource || "IN_CLOUD";
+    const source = normalizeSource(response.inferenceSource);
     const recipes = parseRecipes(raw);
     if (!recipes || !recipes.length) {
       // Fallback: show the raw text so nothing is lost.
