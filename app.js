@@ -249,7 +249,7 @@ async function findRecipes() {
     const model = getGenerativeModel(ai, {
       mode: inferenceModeFromSelect(),
       inCloudParams: {
-        model: "gemini-2.5-flash",
+        model: "gemini-3.8-flash",
         generationConfig: { maxOutputTokens: 2000, temperature: 0.7 },
       },
       onDeviceParams: {
